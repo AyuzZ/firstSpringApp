@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Product</title>
+</head>
+<body>
+<h1>Create and add a new product.</h1>
+<form th:action="@{/products}" th:object="${product}" method="POST">
+    <input type="text" id="name" th:field="${product.name}" placeholder="Name" required/>
+    <input type="text" id="price" th:field="${product.price}" placeholder="Price" required/>
+    <input type="text" id="stock" th:field="${product.stock}" placeholder="Stock" required/>
+    <button type="submit">Create</button>
+</form>
+<a th:href="@{/products}">Product Page</a>
+</body>
+</html>
