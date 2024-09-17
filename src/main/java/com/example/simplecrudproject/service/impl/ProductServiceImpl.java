@@ -33,6 +33,28 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> getProductByName(String name) {
+        List<Product> productList = productRepository.getSearchedProductByName(name);
+        return productList;
+    }
+
+    @Override
+    public List<Product> getProductByPrice(Double price) {
+        Double lowerLimit = price - 100;
+        Double upperLimit = price + 100;
+        List<Product> productList = productRepository.getSearchedProductByPrice(lowerLimit, upperLimit);
+        return productList;
+    }
+
+    @Override
+    public List<Product> getProductByNameAndPrice(String keyword, Double price) {
+        Double lowerLimit = price - 100;
+        Double upperLimit = price + 100;
+        List<Product> productList = productRepository.getSearchedProductByNameAndPrice(keyword, lowerLimit, upperLimit);
+        return productList;
+    }
+
+    @Override
     public void updateProduct(Product product) {
         productRepository.save(product);
     }

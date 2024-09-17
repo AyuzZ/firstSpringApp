@@ -4,6 +4,7 @@ import com.example.simplecrudproject.exception.ProductNotFoundException;
 import com.example.simplecrudproject.model.Product;
 import com.example.simplecrudproject.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,10 +32,25 @@ public class ProductServiceController {
     }
 
     @GetMapping({"", "/"})
-    public String getProducts(Model model) {
-        List<Product> productList = productService.getProducts();
-        model.addAttribute("productList", productList);
-        return "products/index";
+    public String getProducts(Model model, @Param("keyword") String keyword, @Param("price") Double price) {
+        if(keyword == null && price == null){
+            List<Product> productList = productService.getProducts();
+            model.addAttribute("productList", productList);
+            return "products/index";
+        } else if (keyword != null && price == null) {
+            List<Product> productList = productService.getProductByName(keyword);
+            model.addAttribute("productList", productList);
+            return "products/index";
+        } else if (keyword == null) {
+            List<Product> productList = productService.getProductByPrice(price);
+            model.addAttribute("productList", productList);
+            return "products/index";
+        } else{
+            List<Product> productList = productService.getProductByNameAndPrice(keyword, price);
+            model.addAttribute("productList", productList);
+            return "products/index";
+        }
+
     }
 
     @GetMapping("/{id}")
@@ -50,6 +66,8 @@ public class ProductServiceController {
             throw new ProductNotFoundException();
         }
     }
+
+
 
     @GetMapping("/edit/{id}")
     public String updateProductForm(@PathVariable int id, Model model){
