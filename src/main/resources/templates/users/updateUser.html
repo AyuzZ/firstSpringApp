@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Account</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+</head>
+<body>
+<div th:replace="/header"> </div>
+<form th:action="@{/users/{username}(username=${user.username})}" th:object="${user}" method="POST">
+    <div class="form-group">
+        <p>Username: </p>
+        <p th:text="${user.username}"></p>
+    </div>
+    <div class="form-group">
+        <label for="gender">Gender</label>
+        <input type="text" class="form-control" id="gender" th:field="${user.gender}" placeholder="gender" required/>
+    </div>
+    <div class="form-group">
+        <label for="age">Age</label>
+        <input type="text" class="form-control" id="age" th:field="${user.age}" placeholder="age" required/>
+    </div>
+    <button type="submit" class="btn btn-dark">Update Info</button>
+</form>
+</body>
+</html>
