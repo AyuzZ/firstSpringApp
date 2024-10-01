@@ -16,8 +16,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
 
     @Override
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
+    public void createProduct(Product product) {
+        productRepository.save(product);
     }
 
     @Override

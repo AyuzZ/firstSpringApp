@@ -9,7 +9,7 @@
     crossorigin="anonymous">
 </head>
 <body>
-    <div th:replace="/products/header"> </div>
+    <div th:replace="/header"> </div>
     <table class="table table-dark">
         <thead>
             <tr>
@@ -25,10 +25,6 @@
                 <td th:text="${product.name}"></td>
                 <td th:text="${product.price}"></td>
                 <td th:text="${product.stock}"></td>
-                <td>
-                    <a th:href="@{/products/edit/{id}(id=${product.id})}">Edit</a>
-                    <a th:href="@{/products/delete(id=${product.id})}">Delete</a>
-                </td>
             </tr>
         </tbody>
     </table>

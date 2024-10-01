@@ -3,10 +3,9 @@ package com.example.simplecrudproject.service;
 import com.example.simplecrudproject.model.Product;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ProductService {
-    public abstract Product createProduct(Product product);
+    public abstract void createProduct(Product product);
 
     public abstract List<Product> getProducts();
 
