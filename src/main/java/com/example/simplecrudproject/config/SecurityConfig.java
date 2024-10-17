@@ -1,40 +1,25 @@
 package com.example.simplecrudproject.config;
 
-import com.example.simplecrudproject.exception.CustomAccessDeniedHandler;
-import com.example.simplecrudproject.model.Exceptions;
 import jakarta.servlet.DispatcherType;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.EventListener;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
-import org.springframework.security.authorization.AuthorizationEventPublisher;
-import org.springframework.security.authorization.SpringAuthorizationEventPublisher;
-import org.springframework.security.authorization.event.AuthorizationDeniedEvent;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.context.DelegatingSecurityContextRepository;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
-import org.springframework.stereotype.Component;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    private final AccessDeniedHandler accessDeniedHandler;
-
-    public SecurityConfig(CustomAccessDeniedHandler accessDeniedHandler) {
-        this.accessDeniedHandler = accessDeniedHandler;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -43,7 +28,7 @@ public class SecurityConfig {
                                 .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/", "/products", "/products/index").permitAll()
                         .requestMatchers("/users", "/users/createUser").permitAll()
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/login", "/logout").permitAll()
 //                        .requestMatchers("/users/profile/**", "/users/updateUser/**").hasRole("USER")
 //                        not required cause of .anyRequest other than mentioned require authentication
 //                        and the authenticated is either admin or user
@@ -52,15 +37,15 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
+                        .loginPage("/login")
                         .defaultSuccessUrl("/products", true)
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/products")
+                        .logoutUrl("/logout")
                         .invalidateHttpSession(true)
-                        .addLogoutHandler(
-                                new HeaderWriterLogoutHandler(
-                                        new ClearSiteDataHeaderWriter(
-                                                ClearSiteDataHeaderWriter.Directive.COOKIES)))
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessUrl("/login")
                 )
                 .securityContext(securityContext -> securityContext
                         .securityContextRepository(
@@ -69,11 +54,9 @@ public class SecurityConfig {
                                         new HttpSessionSecurityContextRepository()))
                 )
                 .sessionManagement(session -> session
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(true)
-                )
-                .exceptionHandling(exceptions -> exceptions
-                        .accessDeniedHandler(accessDeniedHandler)
+                        .sessionFixation().none()
+//                        .maximumSessions(1)
+//                        .maxSessionsPreventsLogin(true)
                 )
         ;
         return http.build();

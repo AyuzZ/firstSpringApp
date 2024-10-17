@@ -10,22 +10,29 @@
 </head>
 <body>
 <div th:replace="/header"> </div>
+<div th:if="${errorMessage}">
+    <span th:text="${errorMessage}">  </span>
+</div>
 <form th:action="@{/users}" th:object="${user}" method="POST">
     <div class="form-group">
         <label for="username">Username</label>
-        <input type="text" class="form-control" id="username" th:field="${user.username}" placeholder="username" required/>
+        <input type="text" class="form-control" id="username" th:field="${user.username}" placeholder="username"/>
+        <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
     </div>
     <div class="form-group">
         <label for="password">Password</label>
-        <input type="text" class="form-control" id="password" th:field="${user.password}" placeholder="password" required/>
+        <input type="password" class="form-control" id="password" th:field="${user.password}" placeholder="password"/>
+        <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
     </div>
     <div class="form-group">
         <label for="gender">Gender</label>
-        <input type="text" class="form-control" id="gender" th:field="${user.gender}" placeholder="gender" required/>
+        <input type="text" class="form-control" id="gender" th:field="${user.gender}" placeholder="gender"/>
+        <span th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}"></span>
     </div>
     <div class="form-group">
         <label for="age">Age</label>
-        <input type="text" class="form-control" id="age" th:field="${user.age}" placeholder="age" required/>
+        <input type="text" class="form-control" id="age" th:field="${user.age}" placeholder="age"/>
+        <span th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></span>
     </div>
     <button type="submit" class="btn btn-dark">Create Account</button>
 </form>

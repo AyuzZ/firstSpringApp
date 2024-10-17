@@ -20,9 +20,6 @@
         <li class="nav-item">
           <a class="nav-link" th:href="@{/products}">Users Home</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/admin}">Admin Home</a>
-        </li>
       </ul>
       <ul class="navbar-nav mr-auto" sec:authorize="isAnonymous()">
         <li class="nav-item">
@@ -33,17 +30,26 @@
         </li>
 
       </ul>
+
       <ul class="navbar-nav mr-auto" sec:authorize="isAuthenticated()">
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/products/createProduct}">Create Product</a>
-        </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/users/profile}">View Account</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/logout}">Logout</a>
+<!--          <a class="nav-link" th:href="@{/logout}">Logout</a>-->
+          <a class="nav-link" href="/logout">Logout</a>
         </li>
       </ul>
+
+      <ul class="navbar-nav mr-auto" sec:authorize="hasRole('ADMIN')">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/admin}">Admin Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/products/createProduct}">Create Product</a>
+        </li>
+      </ul>
+
       <form th:action="@{/products}" class="form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="search" placeholder="Product Name" aria-label="Name" name="keyword">
         <input class="form-control mr-sm-2" type="number" placeholder="Product Price" aria-label="Price" name="price">

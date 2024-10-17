@@ -1,11 +1,13 @@
 package com.example.simplecrudproject.controller;
 
+import com.example.simplecrudproject.dto.NewUserDTO;
 import com.example.simplecrudproject.exception.UserNotFoundException;
 import com.example.simplecrudproject.model.Exceptions;
 import com.example.simplecrudproject.model.Product;
 import com.example.simplecrudproject.model.User;
 import com.example.simplecrudproject.service.ProductService;
 import com.example.simplecrudproject.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,6 +30,16 @@ public class UserController {
 
     @Autowired
     private ProductService productService;
+
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+
+    @GetMapping("/logout")
+    public String logout(Model model) {
+        return "login";
+    }
 
     //Displaying products on the home page
     @GetMapping({"/products", "/products/"})
@@ -52,27 +65,43 @@ public class UserController {
 
     //Create User Form
     @GetMapping("/users/createUser")
-    public String createUserForm(Model model){
-        User user = new User();
+    public String createUserForm(@ModelAttribute("user") NewUserDTO user, Model model){
         model.addAttribute("user", user);
         return "users/createUser";
     }
 
     //Create User Method
     @PostMapping({"/users","/users/"})
-    public String createUser(@ModelAttribute("user") User user){
+    public String createUser(Model model, @Valid @ModelAttribute("user") NewUserDTO user, BindingResult result){
+
+        if(result.hasErrors()){
+            return "users/createUser";
+        }
+
+        boolean doesUserExist = userService.doesUsernameExist(user.getUsername());
+        if (doesUserExist){
+            String usernameExistsError = "Username Already Exists. Enter a differ username.";
+            model.addAttribute("errorMessage", usernameExistsError);
+            return "users/createUser";
+        }
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encryptedPassword = encoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);
 
         try {
-            userService.createUser(user);
+            User validUser = new User();
+            validUser.setUsername(user.getUsername());
+            validUser.setPassword(user.getPassword());
+            validUser.setGender(user.getGender());
+            validUser.setAge(user.getAge());
+
+            userService.createUser(validUser);
         } catch (Exception e) {
             Exceptions exception = new Exceptions(e.toString());
             return "/exception";
         }
-        return "redirect:products";
+        return "redirect:/login";
     }
 
     //Get user profile
